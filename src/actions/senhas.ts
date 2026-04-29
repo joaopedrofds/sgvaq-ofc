@@ -1,18 +1,31 @@
 'use server'
-import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { getSession } from '@/lib/auth/get-session'
 import { requireRole } from '@/lib/auth/require-role'
 import { revalidatePath } from 'next/cache'
-
-export const vendaSchema = z.object({
-  modalidade_id: z.string().uuid(),
-  competidor_cpf: z.string().min(11, 'CPF inválido'),
-  canal: z.enum(['presencial', 'online']),
-})
+import { vendaSchema } from '@/lib/senhas/schema'
+import { mockSenhas, mockCompetidores, mockModalidades } from '@/lib/mock/data'
 
 export async function venderSenhaPresencial(formData: z.infer<typeof vendaSchema>) {
+  if (process.env.NEXT_PUBLIC_MOCK === 'true') {
+    const modalidade = mockModalidades.find(m => m.id === formData.modalidade_id)
+    const competidor = mockCompetidores.find(c => c.cpf.replace(/\D/g, '') === formData.competidor_cpf.replace(/\D/g, ''))
+    if (!competidor) return { error: 'Competidor não encontrado. Cadastre-o primeiro.' }
+    if (!modalidade) return { error: 'Modalidade não encontrada' }
+    if (modalidade.senhas_vendidas >= modalidade.total_senhas) return { error: 'Estoque de senhas esgotado' }
+    const mockSenha = {
+      id: 'mock-senha-' + Date.now(),
+      modalidade_id: formData.modalidade_id,
+      competidor_id: competidor.id,
+      numero_senha: mockSenhas.filter(s => s.modalidade_id === formData.modalidade_id).length + 1,
+      canal: 'presencial',
+      status: 'ativa',
+      valor_pago: modalidade.valor_senha,
+      competidores: { nome: competidor.nome, cpf: competidor.cpf, whatsapp: competidor.whatsapp },
+    }
+    return { data: mockSenha }
+  }
   const session = await getSession()
   requireRole(session, ['financeiro', 'organizador'])
 
@@ -97,6 +110,7 @@ export async function venderSenhaPresencial(formData: z.infer<typeof vendaSchema
 }
 
 export async function cancelarSenha(senhaId: string, motivo?: string) {
+  if (process.env.NEXT_PUBLIC_MOCK === 'true') return { success: true }
   const session = await getSession()
   requireRole(session, ['financeiro', 'organizador'])
 
@@ -143,6 +157,10 @@ export async function cancelarSenha(senhaId: string, motivo?: string) {
 }
 
 export async function getSenhasByModalidade(modalidadeId: string) {
+  if (process.env.NEXT_PUBLIC_MOCK === 'true') {
+    const data = mockSenhas.filter(s => s.modalidade_id === modalidadeId)
+    return { data }
+  }
   const session = await getSession()
   requireRole(session, ['organizador', 'financeiro'])
 

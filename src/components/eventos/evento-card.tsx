@@ -30,7 +30,7 @@ export function EventoCard({ id, nome, tipo, data_inicio, cidade, estado, status
         <CardContent className="space-y-1 text-sm text-gray-600">
           <div className="flex items-center gap-1">
             <Calendar className="h-3 w-3" />
-            {new Date(data_inicio).toLocaleDateString('pt-BR')}
+            {new Date(data_inicio + 'T12:00:00').toLocaleDateString('pt-BR')}
           </div>
           <div className="flex items-center gap-1">
             <MapPin className="h-3 w-3" />

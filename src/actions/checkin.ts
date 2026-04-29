@@ -4,8 +4,9 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { getSession } from '@/lib/auth/get-session'
 import { requireRole } from '@/lib/auth/require-role'
 import { revalidatePath } from 'next/cache'
+import { mockFila, mockSenhas } from '@/lib/mock/data'
 
-export function parseQRCode(raw: string): { senha_id: string; tenant_id: string } | null {
+export async function parseQRCode(raw: string): Promise<{ senha_id: string; tenant_id: string } | null> {
   try {
     const parsed = JSON.parse(raw)
     if (!parsed.senha_id || !parsed.tenant_id) return null
@@ -16,6 +17,9 @@ export function parseQRCode(raw: string): { senha_id: string; tenant_id: string 
 }
 
 export async function fazerCheckin(senhaId: string, tenantIdQR: string) {
+  if (process.env.NEXT_PUBLIC_MOCK === 'true') {
+    return { success: true, competidor: 'Competidor Mock' }
+  }
   const session = await getSession()
   requireRole(session, ['financeiro', 'organizador'])
 
@@ -62,6 +66,9 @@ export async function fazerCheckin(senhaId: string, tenantIdQR: string) {
 }
 
 export async function checkinManual(numeroSenha: number, modalidadeId: string) {
+  if (process.env.NEXT_PUBLIC_MOCK === 'true') {
+    return { success: true, competidor: 'Competidor Mock' }
+  }
   const supabase = await createClient()
   const { data: senha } = await supabase
     .from('senhas')
@@ -78,6 +85,10 @@ export async function checkinManual(numeroSenha: number, modalidadeId: string) {
 }
 
 export async function getFila(modalidadeId: string) {
+  if (process.env.NEXT_PUBLIC_MOCK === 'true') {
+    const data = mockFila.filter(f => f.modalidade_id === modalidadeId)
+    return { data }
+  }
   const supabase = await createClient()
   const { data, error } = await supabase
     .from('fila_entrada')
@@ -90,6 +101,7 @@ export async function getFila(modalidadeId: string) {
 }
 
 export async function avancarFila(filaId: string, novoStatus: 'chamado' | 'passou' | 'ausente') {
+  if (process.env.NEXT_PUBLIC_MOCK === 'true') return { success: true }
   const session = await getSession()
   requireRole(session, ['financeiro', 'organizador'])
 

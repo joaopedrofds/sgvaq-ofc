@@ -51,6 +51,9 @@ export async function calcularCobrancaMensal(
 }
 
 export async function criarCobranca(tenantId: string, mes: string): Promise<CobrancaSgvaq> {
+  if (process.env.NEXT_PUBLIC_MOCK === 'true') {
+    return { id: 'mock-cob-' + Date.now(), tenant_id: tenantId, mes_referencia: mes, total_vendas: 0, valor_devido: 0, status: 'pendente', comprovante_pagamento_url: null, confirmado_por: null, confirmado_em: null, created_at: new Date().toISOString() } as CobrancaSgvaq
+  }
   const session = await getSession()
   requireRole(session, ['organizador'])
 
@@ -72,6 +75,7 @@ export async function atualizarStatusCobranca(
   status: CobrancaStatus,
   comprovanteBase64?: string
 ): Promise<void> {
+  if (process.env.NEXT_PUBLIC_MOCK === 'true') return
   const session = await getSession()
   requireRole(session, ['organizador'])
 
@@ -99,6 +103,10 @@ export async function atualizarStatusCobranca(
 export async function listarCobrancas(
   filters: { tenantId?: string; mes?: string; status?: CobrancaStatus } = {}
 ): Promise<CobrancaSgvaq[]> {
+  if (process.env.NEXT_PUBLIC_MOCK === 'true') {
+    const { mockCobrancas } = await import('@/lib/mock/data')
+    return mockCobrancas as CobrancaSgvaq[]
+  }
   const session = await getSession()
   requireRole(session, ['organizador'])
 
@@ -118,6 +126,9 @@ export async function listarCobrancas(
 }
 
 export async function gerarPdfCobranca(cobrancaId: string): Promise<{ base64: string; filename: string }> {
+  if (process.env.NEXT_PUBLIC_MOCK === 'true') {
+    return { base64: '', filename: 'cobranca-mock.pdf' }
+  }
   const session = await getSession()
   requireRole(session, ['organizador'])
 

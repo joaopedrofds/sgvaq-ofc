@@ -2,8 +2,7 @@ import { getEventos } from '@/actions/eventos'
 import { EventoCard } from '@/components/eventos/evento-card'
 import Link from 'next/link'
 import { Plus } from 'lucide-react'
-import { buttonVariants } from '@/components/ui/button'
-import { cn } from '@/lib/utils'
+import { Button } from '@/components/ui/button'
 import type { EventoStatus } from '@/types'
 
 export default async function EventosPage() {
@@ -13,13 +12,13 @@ export default async function EventosPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-gray-900">Eventos</h1>
-        <Link
+        <a
           href="/eventos/novo"
-          className={cn(buttonVariants({ variant: 'default' }), 'bg-amber-700 hover:bg-amber-800')}
+          className="inline-flex shrink-0 items-center justify-center rounded-lg border border-transparent bg-amber-700 hover:bg-amber-800 text-sm font-medium h-8 gap-1.5 px-2.5 text-white transition-colors"
         >
-          <Plus className="h-4 w-4 mr-2" />
+          <Plus className="h-4 w-4" />
           Novo evento
-        </Link>
+        </a>
       </div>
       {'error' in (result ?? {}) ? (
         <p className="text-red-500">{(result as any).error}</p>

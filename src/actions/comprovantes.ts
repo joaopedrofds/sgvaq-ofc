@@ -9,6 +9,7 @@ const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'application/pdf']
 const MAX_SIZE = 5 * 1024 * 1024 // 5MB
 
 export async function uploadComprovante(senhaId: string, file: File) {
+  if (process.env.NEXT_PUBLIC_MOCK === 'true') return { success: true }
   if (!ALLOWED_TYPES.includes(file.type)) {
     return { error: 'Tipo de arquivo não permitido. Use JPG, PNG ou PDF.' }
   }
@@ -39,6 +40,9 @@ export async function uploadComprovante(senhaId: string, file: File) {
 }
 
 export async function getComprovanteUrl(senhaId: string) {
+  if (process.env.NEXT_PUBLIC_MOCK === 'true') {
+    return { url: '/mock/comprovante.pdf' }
+  }
   const supabase = await createClient()
   const { data: senha } = await supabase
     .from('senhas')
@@ -57,6 +61,7 @@ export async function getComprovanteUrl(senhaId: string) {
 }
 
 export async function aprovarComprovante(senhaId: string) {
+  if (process.env.NEXT_PUBLIC_MOCK === 'true') return { success: true }
   const session = await getSession()
   requireRole(session, ['financeiro', 'organizador'])
 
@@ -114,6 +119,7 @@ export async function aprovarComprovante(senhaId: string) {
 }
 
 export async function rejeitarComprovante(senhaId: string, motivo: string) {
+  if (process.env.NEXT_PUBLIC_MOCK === 'true') return { success: true }
   const session = await getSession()
   requireRole(session, ['financeiro', 'organizador'])
 

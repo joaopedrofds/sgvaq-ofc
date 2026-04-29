@@ -3,6 +3,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { getSession } from '@/lib/auth/get-session'
 import { requireRole } from '@/lib/auth/require-role'
+import { mockNotificacoes } from '@/lib/mock/data'
 
 export interface NotificacaoFila {
   id: string
@@ -18,6 +19,9 @@ export interface NotificacaoFila {
 }
 
 export async function listarNotificacoesFalhas(limit = 100): Promise<NotificacaoFila[]> {
+  if (process.env.NEXT_PUBLIC_MOCK === 'true') {
+    return mockNotificacoes.filter(n => n.status === 'falhou') as NotificacaoFila[]
+  }
   const session = await getSession()
   requireRole(session, ['organizador'])
 
@@ -37,6 +41,11 @@ export async function listarTodasNotificacoes(
   filters: { status?: string; tenantId?: string } = {},
   limit = 100
 ): Promise<NotificacaoFila[]> {
+  if (process.env.NEXT_PUBLIC_MOCK === 'true') {
+    let result = [...mockNotificacoes]
+    if (filters.status) result = result.filter(n => n.status === filters.status)
+    return result as NotificacaoFila[]
+  }
   const session = await getSession()
   requireRole(session, ['organizador'])
 
@@ -56,6 +65,7 @@ export async function listarTodasNotificacoes(
 }
 
 export async function reenviarNotificacao(notificacaoId: string): Promise<void> {
+  if (process.env.NEXT_PUBLIC_MOCK === 'true') return
   const session = await getSession()
   requireRole(session, ['organizador'])
 

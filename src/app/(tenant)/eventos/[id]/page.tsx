@@ -4,15 +4,22 @@ import { EventoForm } from '@/components/eventos/evento-form'
 import { StatusBadge } from '@/components/eventos/status-badge'
 import { StatusTransition } from '@/components/eventos/status-transition'
 import Link from 'next/link'
-import { buttonVariants } from '@/components/ui/button'
-import { cn } from '@/lib/utils'
 import type { EventoStatus } from '@/types'
+import { mockEventos } from '@/lib/mock/data'
 
 export default async function EventoDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
-  const supabase = await createClient()
-  const { data: evento } = await supabase.from('eventos').select('*').eq('id', id).single()
-  if (!evento) notFound()
+
+  let evento: any
+  if (process.env.NEXT_PUBLIC_MOCK === 'true') {
+    evento = mockEventos.find(e => e.id === id)
+    if (!evento) notFound()
+  } else {
+    const supabase = await createClient()
+    const { data } = await supabase.from('eventos').select('*').eq('id', id).single()
+    if (!data) notFound()
+    evento = data
+  }
 
   return (
     <div className="space-y-8">
@@ -33,25 +40,25 @@ export default async function EventoDetailPage({ params }: { params: Promise<{ i
           <div className="space-y-2">
             <Link
               href={`/eventos/${id}/modalidades`}
-              className={cn(buttonVariants({ variant: 'outline' }), 'w-full justify-start')}
+              className="inline-flex items-center justify-center rounded-lg border border-border bg-background hover:bg-muted h-8 gap-1.5 px-2.5 text-sm font-medium w-full"
             >
               Modalidades e critérios
             </Link>
             <Link
               href={`/eventos/${id}/senhas`}
-              className={cn(buttonVariants({ variant: 'outline' }), 'w-full justify-start')}
+              className="inline-flex items-center justify-center rounded-lg border border-border bg-background hover:bg-muted h-8 gap-1.5 px-2.5 text-sm font-medium w-full"
             >
               Senhas vendidas
             </Link>
             <Link
               href={`/eventos/${id}/checkin`}
-              className={cn(buttonVariants({ variant: 'outline' }), 'w-full justify-start')}
+              className="inline-flex items-center justify-center rounded-lg border border-border bg-background hover:bg-muted h-8 gap-1.5 px-2.5 text-sm font-medium w-full"
             >
               Check-in
             </Link>
             <Link
               href={`/eventos/${id}/ranking`}
-              className={cn(buttonVariants({ variant: 'outline' }), 'w-full justify-start')}
+              className="inline-flex items-center justify-center rounded-lg border border-border bg-background hover:bg-muted h-8 gap-1.5 px-2.5 text-sm font-medium w-full"
             >
               Ranking
             </Link>

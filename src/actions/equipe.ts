@@ -5,6 +5,7 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { getSession } from '@/lib/auth/get-session'
 import { requireRole } from '@/lib/auth/require-role'
 import { revalidatePath } from 'next/cache'
+import { mockEquipe } from '@/lib/mock/data'
 
 const conviteSchema = z.object({
   nome: z.string().min(2),
@@ -14,6 +15,7 @@ const conviteSchema = z.object({
 })
 
 export async function convidarMembro(formData: z.infer<typeof conviteSchema>) {
+  if (process.env.NEXT_PUBLIC_MOCK === 'true') return { success: true }
   const session = await getSession()
   requireRole(session, ['organizador'])
 
@@ -55,6 +57,7 @@ export async function convidarMembro(formData: z.infer<typeof conviteSchema>) {
 }
 
 export async function getEquipe() {
+  if (process.env.NEXT_PUBLIC_MOCK === 'true') return { data: mockEquipe }
   const session = await getSession()
   requireRole(session, ['organizador'])
 
@@ -69,6 +72,7 @@ export async function getEquipe() {
 }
 
 export async function desativarMembro(userId: string) {
+  if (process.env.NEXT_PUBLIC_MOCK === 'true') return { success: true }
   const session = await getSession()
   requireRole(session, ['organizador'])
 

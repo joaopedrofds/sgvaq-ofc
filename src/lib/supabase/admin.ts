@@ -1,8 +1,12 @@
 import { createClient } from '@supabase/supabase-js'
 import type { Database } from '@/types/database'
+import { createMockServerClient } from './mock-server'
 
 // NUNCA use este cliente no frontend. Apenas em Server Actions e API Routes.
 export function createAdminClient() {
+  if (process.env.NEXT_PUBLIC_MOCK === 'true') {
+    return createMockServerClient() as any
+  }
   if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
     throw new Error('SUPABASE_SERVICE_ROLE_KEY não configurada')
   }

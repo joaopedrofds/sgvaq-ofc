@@ -7,6 +7,7 @@ import React from 'react'
 import { renderToBuffer } from '@/lib/pdf/render-to-buffer'
 import { RelatorioCaixaDocument } from '@/components/financeiro/RelatorioCaixaDocument'
 import { FolhasPremiacaoDocument } from '@/components/financeiro/FolhasPremiacaoDocument'
+import { mockTransacoes } from '@/lib/mock/data'
 
 export interface ResumoFinanceiro {
   totalBruto: number        // centavos
@@ -40,6 +41,11 @@ export async function listarTransacoes(
   page = 0,
   pageSize = 50
 ): Promise<{ data: FinanceiroTransacao[]; count: number }> {
+  if (process.env.NEXT_PUBLIC_MOCK === 'true') {
+    const filtered = mockTransacoes.filter(t => t.evento_id === eventoId) as FinanceiroTransacao[]
+    const start = page * pageSize
+    return { data: filtered.slice(start, start + pageSize), count: filtered.length }
+  }
   const session = await getSession()
   requireRole(session, ['organizador', 'financeiro'])
 
@@ -59,6 +65,10 @@ export async function listarTransacoes(
 }
 
 export async function calcularResumoFinanceiro(eventoId: string): Promise<ResumoFinanceiro> {
+  if (process.env.NEXT_PUBLIC_MOCK === 'true') {
+    const transacoes = mockTransacoes.filter(t => t.evento_id === eventoId) as FinanceiroTransacao[]
+    return { ...calcularResumoDeTransacoes(transacoes), transacoes }
+  }
   const session = await getSession()
   requireRole(session, ['organizador', 'financeiro'])
 
@@ -76,6 +86,9 @@ export async function calcularResumoFinanceiro(eventoId: string): Promise<Resumo
 }
 
 export async function gerarPdfRelatorioCaixa(eventoId: string): Promise<{ base64: string; filename: string }> {
+  if (process.env.NEXT_PUBLIC_MOCK === 'true') {
+    return { base64: '', filename: 'relatorio-mock.pdf' }
+  }
   const session = await getSession()
   requireRole(session, ['organizador', 'financeiro'])
 
@@ -108,6 +121,9 @@ export async function gerarPdfFolhaPremiacao(
   eventoId: string,
   modalidadeId: string
 ): Promise<{ base64: string; filename: string }> {
+  if (process.env.NEXT_PUBLIC_MOCK === 'true') {
+    return { base64: '', filename: 'premiacao-mock.pdf' }
+  }
   const session = await getSession()
   requireRole(session, ['organizador', 'financeiro'])
 
