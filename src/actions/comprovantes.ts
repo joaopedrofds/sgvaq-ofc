@@ -107,12 +107,12 @@ export async function aprovarComprovante(senhaId: string) {
   })
 
   // Enfileirar notificação WhatsApp
-  await supabase.from('notificacoes_fila').insert({
+  await (supabase.from('notificacoes_fila') as any).upsert({
     idempotency_key: `comprovante_aprovado:${senhaId}`,
     competidor_id: senha.competidor_id,
     tipo: 'comprovante_aprovado',
     mensagem: 'Seu comprovante foi aprovado! Sua senha está ativa.',
-  }).onConflict('idempotency_key').ignore()
+  }, { onConflict: 'idempotency_key', ignoreDuplicates: true })
 
   revalidatePath('/financeiro')
   return { success: true }
@@ -144,12 +144,12 @@ export async function rejeitarComprovante(senhaId: string, motivo: string) {
 
   // Notificar competidor
   if (senha) {
-    await supabase.from('notificacoes_fila').insert({
+    await (supabase.from('notificacoes_fila') as any).upsert({
       idempotency_key: `comprovante_rejeitado:${senhaId}`,
       competidor_id: senha.competidor_id,
       tipo: 'comprovante_rejeitado',
       mensagem: `Seu comprovante foi rejeitado. Motivo: ${motivo}`,
-    }).onConflict('idempotency_key').ignore()
+    }, { onConflict: 'idempotency_key', ignoreDuplicates: true })
   }
 
   revalidatePath('/financeiro')
