@@ -7,5 +7,5 @@ declare module 'next-pwa' {
     skipWaiting?: boolean
     runtimeCaching?: any[]
   }): (nextConfig: NextConfig) => NextConfig
-  export = withPWA
+  export default withPWA
 }
