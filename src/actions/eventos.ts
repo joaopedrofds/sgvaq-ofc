@@ -7,11 +7,11 @@ import { requireRole } from '@/lib/auth/require-role'
 import { revalidatePath } from 'next/cache'
 import type { EventoStatus } from '@/types'
 import { eventoSchema, validateEventoTransition } from '@/lib/eventos/schema'
-import { mockEventos, addMockEvento } from '@/lib/mock/data'
+import { mockEventos, addMockEvento, type MockEvento } from '@/lib/mock/data'
 
 export async function createEvento(formData: z.infer<typeof eventoSchema>) {
   if (process.env.NEXT_PUBLIC_MOCK === 'true') {
-    const novoEvento = { id: 'mock-evento-' + Date.now(), ...formData, status: 'rascunho' as const, tenant_id: 'mock-tenant-1', banner_url: null, regulamento_url: null, created_at: new Date().toISOString(), modalidades: [{ count: 0 }] }
+    const novoEvento: MockEvento = { id: 'mock-evento-' + Date.now(), ...formData, local: formData.local ?? null, status: 'rascunho', tenant_id: 'mock-tenant-1', banner_url: null, regulamento_url: null, created_at: new Date().toISOString(), modalidades: [{ count: 0 }] }
     addMockEvento(novoEvento)
     return { data: novoEvento }
   }
@@ -43,7 +43,7 @@ export async function createEvento(formData: z.infer<typeof eventoSchema>) {
 export async function updateEvento(id: string, formData: Partial<z.infer<typeof eventoSchema>>) {
   if (process.env.NEXT_PUBLIC_MOCK === 'true') {
     const idx = mockEventos.findIndex(e => e.id === id)
-    if (idx >= 0) Object.assign(mockEventos[idx], formData)
+    if (idx >= 0) Object.assign(mockEventos[idx], { ...formData, local: formData.local ?? null })
     return { data: { ...formData, id } }
   }
   const session = await getSession()
