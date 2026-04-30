@@ -127,14 +127,12 @@ export interface MockEquipe {
 export interface MockCobranca {
   id: string
   tenant_id: string
-  mes_referencia: string
-  total_vendas: number
-  valor_devido: number
+  mes: string
+  total_cobranca: number
   status: string
-  comprovante_pagamento_url: string | null
-  confirmado_por: string | null
-  confirmado_em: string | null
+  comprovante_url: string | null
   created_at: string
+  updated_at: string
   tenant?: { nome: string; slug: string }
 }
 
@@ -360,8 +358,8 @@ export const mockEquipe: MockEquipe[] = [
 // COBRANÇAS
 // ============================================================
 export const mockCobrancas: MockCobranca[] = [
-  { id: 'mock-cob-1', tenant_id: 'mock-tenant-1', mes_referencia: '2026-04', total_vendas: 15, valor_devido: 1500, status: 'pago', comprovante_pagamento_url: 'cobrancas/comprovante-abril.pdf', confirmado_por: 'super-admin', confirmado_em: '2026-05-05T10:00:00Z', created_at: '2026-05-01T00:00:00Z', tenant: { nome: mockTenant.nome, slug: mockTenant.slug } },
-  { id: 'mock-cob-2', tenant_id: 'mock-tenant-1', mes_referencia: '2026-05', total_vendas: 8, valor_devido: 800, status: 'pendente', comprovante_pagamento_url: null, confirmado_por: null, confirmado_em: null, created_at: '2026-06-01T00:00:00Z', tenant: { nome: mockTenant.nome, slug: mockTenant.slug } },
+  { id: 'mock-cob-1', tenant_id: 'mock-tenant-1', mes: '2026-04', total_cobranca: 1500, status: 'pago', comprovante_url: 'cobrancas/comprovante-abril.pdf', created_at: '2026-05-01T00:00:00Z', updated_at: '2026-05-05T10:00:00Z', tenant: { nome: mockTenant.nome, slug: mockTenant.slug } },
+  { id: 'mock-cob-2', tenant_id: 'mock-tenant-1', mes: '2026-05', total_cobranca: 800, status: 'pendente', comprovante_url: null, created_at: '2026-06-01T00:00:00Z', updated_at: '2026-06-01T00:00:00Z', tenant: { nome: mockTenant.nome, slug: mockTenant.slug } },
 ]
 
 // ============================================================

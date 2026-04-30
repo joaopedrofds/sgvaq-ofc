@@ -52,7 +52,7 @@ export async function calcularCobrancaMensal(
 
 export async function criarCobranca(tenantId: string, mes: string): Promise<CobrancaSgvaq> {
   if (process.env.NEXT_PUBLIC_MOCK === 'true') {
-    return { id: 'mock-cob-' + Date.now(), tenant_id: tenantId, mes_referencia: mes, total_vendas: 0, valor_devido: 0, status: 'pendente', comprovante_pagamento_url: null, confirmado_por: null, confirmado_em: null, created_at: new Date().toISOString() } as CobrancaSgvaq
+    return { id: 'mock-cob-' + Date.now(), tenant_id: tenantId, mes, total_cobranca: 0, status: 'pendente', comprovante_url: null, created_at: new Date().toISOString(), updated_at: new Date().toISOString() } as CobrancaSgvaq
   }
   const session = await getSession()
   requireRole(session, ['organizador'])
