@@ -8,33 +8,8 @@ import { renderToBuffer } from '@/lib/pdf/render-to-buffer'
 import { RelatorioCaixaDocument } from '@/components/financeiro/RelatorioCaixaDocument'
 import { FolhasPremiacaoDocument } from '@/components/financeiro/FolhasPremiacaoDocument'
 import { mockTransacoes } from '@/lib/mock/data'
-
-export interface ResumoFinanceiro {
-  totalBruto: number        // centavos
-  totalTaxaSgvaq: number    // centavos
-  quantidadeVendas: number
-  quantidadeCancelamentos: number
-  transacoes: FinanceiroTransacao[]
-}
-
-export interface FinanceiroTransacao {
-  id: string
-  tipo: 'venda' | 'cancelamento'
-  valor: number
-  taxa_sgvaq: number
-  descricao: string | null
-  created_at: string
-  senha_id: string | null
-  evento_id: string
-}
-
-export function calcularResumoDeTransacoes(transacoes: FinanceiroTransacao[]): Omit<ResumoFinanceiro, 'transacoes'> {
-  const totalBruto = transacoes.reduce((acc, t) => acc + t.valor, 0)
-  const totalTaxaSgvaq = transacoes.reduce((acc, t) => acc + (t.taxa_sgvaq ?? 0), 0)
-  const quantidadeVendas = transacoes.filter(t => t.tipo === 'venda').length
-  const quantidadeCancelamentos = transacoes.filter(t => t.tipo === 'cancelamento').length
-  return { totalBruto, totalTaxaSgvaq, quantidadeVendas, quantidadeCancelamentos }
-}
+import type { ResumoFinanceiro, FinanceiroTransacao } from '@/lib/financeiro-utils'
+import { calcularResumoDeTransacoes } from '@/lib/financeiro-utils'
 
 export async function listarTransacoes(
   eventoId: string,

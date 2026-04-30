@@ -3,7 +3,7 @@ import { useState } from 'react'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import type { FinanceiroTransacao } from '@/actions/financeiro'
+import type { FinanceiroTransacao } from '@/lib/financeiro-utils'
 
 function formatBRL(centavos: number) {
   return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' })

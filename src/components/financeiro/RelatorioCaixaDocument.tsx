@@ -1,5 +1,5 @@
 import { Document, Page, Text, View, StyleSheet } from '@react-pdf/renderer'
-import type { ResumoFinanceiro } from '@/actions/financeiro'
+import type { ResumoFinanceiro } from '@/lib/financeiro-utils'
 
 const styles = StyleSheet.create({
   page:       { padding: 40, fontSize: 10, fontFamily: 'Helvetica' },
